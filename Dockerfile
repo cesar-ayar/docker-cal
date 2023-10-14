@@ -38,7 +38,7 @@ RUN rm -rf node_modules/.cache .yarn/cache apps/web/.next/cache
 FROM node:18 as builder-two
 
 WORKDIR /calcom
-ARG NEXT_PUBLIC_WEBAPP_URL=http://localhost:3000
+ARG NEXT_PUBLIC_WEBAPP_URL=$NEXT_PUBLIC_WEBAPP_URL
 
 ENV NODE_ENV production
 
@@ -62,7 +62,7 @@ FROM node:18 as runner
 
 WORKDIR /calcom
 COPY --from=builder-two /calcom ./
-ARG NEXT_PUBLIC_WEBAPP_URL=http://localhost:3000
+ARG NEXT_PUBLIC_WEBAPP_URL=$NEXT_PUBLIC_WEBAPP_URL
 ENV NEXT_PUBLIC_WEBAPP_URL=$NEXT_PUBLIC_WEBAPP_URL \
     BUILT_NEXT_PUBLIC_WEBAPP_URL=$NEXT_PUBLIC_WEBAPP_URL
 
@@ -70,6 +70,6 @@ ENV NODE_ENV production
 EXPOSE 3000
 
 HEALTHCHECK --interval=30s --timeout=30s --retries=5 \
-    CMD wget --spider http://localhost:3000 || exit 1
+    CMD wget --spider $NEXT_PUBLIC_WEBAPP_URL || exit 1
 
 CMD ["/calcom/scripts/start.sh"]
